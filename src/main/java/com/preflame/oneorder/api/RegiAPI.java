@@ -121,6 +121,7 @@ public class RegiAPI {
                 String name = rs.getString("name");
                 int price = rs.getInt("price");
                 String image = rs.getString("image");
+                String description = rs.getString("description");
                 boolean isVisible = rs.getBoolean("isVisible");
 
                 
@@ -130,6 +131,7 @@ public class RegiAPI {
                 obj.put("itemName", name);
                 obj.put("price", price);
                 obj.put("itemImage", image);
+                obj.put("desc", description);
                 obj.put("display", isVisible);
                 // pstmt2
                 int catId = rs.getInt("category_id");
