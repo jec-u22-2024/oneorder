@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.ArrayList;
+import com.preflame.oneorder.model.CartMerch;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -133,7 +136,7 @@ public class UserAPI {
 		JSONArray json = new JSONArray();
 		TempJson tmpJson = new TempJson();
 		DbManager man = DbManager.getInstance();
-		try (Connection cn = man.getConnection()){
+		try (Connection cn = man.getConnection()) {
 			int tableId = Integer.parseInt(tableid);
 			// System.out.println(tableId);
 
@@ -176,12 +179,35 @@ public class UserAPI {
 	 */
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> postOrderItem(@RequestBody String data) {
-		System.out.println(data);
-		JSONArray json = new JSONArray();
-		TempJson tmpJson = new TempJson();
+		JSONObject json = new JSONObject(data);
+		int table_id = json.getInt("table");
+
+		DbManager man = DbManager.getInstance();
+
+		try (Connection cn = man.getConnection()) {
+			String sql = "INSERT INTO aboutSlip(table_id, merch_id, order_quant) VALUES(?, ?, ?)";
+			PreparedStatement pstmt = cn.prepareStatement(sql);
+			pstmt.setInt(1, table_id);
+
+			JSONArray ar = json.getJSONArray("cart");
+			for(int i = 0;i < ar.length();i++) {
+				JSONObject item = ar.getJSONObject(i);
+				int mid = item.getJSONObject("item").getInt("merch_id");
+				int amount = item.getInt("amount");
+				pstmt.setInt(2, mid);
+				pstmt.setInt(3, amount);
+				int result = pstmt.executeUpdate();
+				if(result < 0) {
+					System.err.println("error?");
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("error");
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 		
-		json.put(tmpJson);
-		
-		return new ResponseEntity<Object>(tmpJson.toMap(), HttpStatus.SERVICE_UNAVAILABLE);
+		return new ResponseEntity<>(HttpStatus.OK);
+		// return new TempJson().getJson();
 	}
 }

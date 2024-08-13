@@ -113,7 +113,8 @@ public class RegiAPI {
         JSONArray json = new JSONArray();
         DbManager man = DbManager.getInstance();
         try(Connection cn = man.getConnection()) {
-            String sql = "SELECT * FROM merchandice";
+            String sql = "SELECT * FROM merchandice m JOIN category c ON m.category_id = c.id";
+            // String sql = "SELECT * FROM merchandice";
             PreparedStatement pstmt = cn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()) {
@@ -123,6 +124,9 @@ public class RegiAPI {
                 String image = rs.getString("image");
                 String description = rs.getString("description");
                 boolean isVisible = rs.getBoolean("isVisible");
+                int category_id = rs.getInt("category_id");
+                String category = rs.getString("category_name");
+                String category_color = rs.getString("category_color");
 
                 
                 JSONObject obj = new JSONObject();
@@ -133,17 +137,9 @@ public class RegiAPI {
                 obj.put("itemImage", image);
                 obj.put("desc", description);
                 obj.put("display", isVisible);
-                // pstmt2
-                int catId = rs.getInt("category_id");
-                PreparedStatement pstmt2 = cn.prepareStatement("SELECT * FROM category WHERE id = ?");
-                pstmt2.setInt(1, catId);
-                ResultSet rs2 = pstmt2.executeQuery();
-                if(rs2.next()) {
-                    String category = rs2.getString("category_name");
-                    String categoryColor = rs2.getString("category_color");
-                    obj.put("category", category);
-                    obj.put("colorCode", categoryColor);
-                }
+                obj.put("category_id", category_id);
+                obj.put("category", category);
+                obj.put("colorCode", category_color);
                 json.put(obj);
             }
         } catch(SQLException e) {
@@ -302,18 +298,70 @@ public class RegiAPI {
         // return new TempJson().getJson();
     }
 
-    @PostMapping("/insertMerch")
+    @PostMapping("/regi/accounting")
+    public ResponseEntity<Object> postMethodName(@RequestBody String Jsons) {
+        JSONObject json = new JSONObject(Jsons);
+        int total = json.getInt("total"); // totalprice
+        int bills = json.getInt("bill"); // amount_paid
+        int changeMoney = bills - total; // change_money
+        int tid = json.getInt("id");
+        int res1 = -1;
+        int res2 = -1;
+        int res3 = -1;
+
+        DbManager man = DbManager.getInstance();
+        try (Connection cn = man.getConnection()) {
+            String sql = "INSERT INTO slip(totalprice, amount_paid, change_money) VALUES(?, ?, ?)"; // total bills changeMoney
+            PreparedStatement pstmt = cn.prepareStatement(sql);
+            pstmt.setInt(1, total);
+            pstmt.setInt(2, bills);
+            pstmt.setInt(3, changeMoney);
+            res1 = pstmt.executeUpdate();
+            String sql2 = "SELECT id FROM slip ORDER BY id DESC LIMIT 1;"; // 最新のslip_idを取得する
+            pstmt = cn.prepareStatement(sql2);
+            ResultSet rs = pstmt.executeQuery();
+            int sid;
+            if(rs.next()) {
+                sid = rs.getInt("id");
+                if(sid != 0) {
+                    String sql3 = "UPDATE aboutSlip SET slip_id = ? WHERE table_id = ? AND slip_id IS NULL"; //sid tid
+                    pstmt = cn.prepareStatement(sql3);
+                    pstmt.setInt(1, sid);
+                    pstmt.setInt(2, tid);
+                    res2 = pstmt.executeUpdate();
+                    String sql4 = "UPDATE tables SET status = '空き状態' WHERE id = ?"; // tid
+                    pstmt = cn.prepareStatement(sql4);
+                    pstmt.setInt(1, tid);
+                    res3 = pstmt.executeUpdate();
+                }
+            }
+            if(res2 < 0 || res3 < 0) {
+                System.err.println("accounting error");
+            } else if(res1 < 0) {
+                System.err.println("argument error");
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Error");
+        }
+        
+        return new REModel().getModel();
+    }
+    
+
+    @PostMapping("/merchandices")
     public ResponseEntity<Object> insertMerch(@RequestBody String Jsons) {
         JSONObject json = new JSONObject(Jsons);
         System.out.println(json);
         
-        TempJson tmpJson = new TempJson();
-        return tmpJson.getJson();
+
+        return new TempJson().getJson();
     }
 
-    @PutMapping("/updateMerch/{id}")
+    @PutMapping("/merchandices/{id}")
     public ResponseEntity<Object> updateMerch(@PathVariable("id") String id, @RequestBody String Jsons) {
-
+        JSONObject json = new JSONObject(Jsons);
+        System.out.println(json);
+        System.out.println(id);
         // System.out.println(Jsons);
         // JSONObject obj = new JSONObject(Jsons);
         // System.out.println(obj);
@@ -328,13 +376,7 @@ public class RegiAPI {
      * @return
      */
     @PostMapping("/upload/merchImage")
-    public ResponseEntity<Object> uploadMerch(
-        // @ModelAttribute @RequestBody Object any
-        // @ModelAttribute @RequestBody ImageForm form
-        // @ModelAttribute @RequestPart("image") File file
-        @RequestPart("images") MultipartFile file
-        // BindingResult bindingResult
-    ) {
+    public ResponseEntity<Object> uploadMerch(@RequestPart("images") MultipartFile file) {
         JSONObject json = new JSONObject();
         HttpStatus stat = null;
 

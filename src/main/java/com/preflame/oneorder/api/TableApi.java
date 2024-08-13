@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.preflame.oneorder.model.REModel;
 import com.preflame.oneorder.sql.DbManager;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/table")
 public class TableApi {
 
-    @GetMapping(path = "/table/status/{tableId}")
+    @GetMapping(path = "/status/{tableId}")
     public ResponseEntity<Object> getStatus(@PathVariable("tableId") String tableId) {
         JSONObject json = new JSONObject();
         DbManager man = DbManager.getInstance();
@@ -50,5 +54,34 @@ public class TableApi {
         }
 
         return new REModel().getObjectToModel(json);
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<Object> changeStatus(@PathVariable("id") String id, @RequestBody String status) {
+        // System.out.println(id);
+        JSONObject json = new JSONObject(status);
+        String stat = json.getString("status");
+        int res = -1;
+        DbManager man = DbManager.getInstance();
+        try (Connection cn = man.getConnection()) {
+            int tid = Integer.parseInt(id);
+            String sql = "UPDATE tables SET status = ? WHERE id = ?";
+            PreparedStatement pstmt = cn.prepareStatement(sql);
+            pstmt.setString(1, stat);;
+            pstmt.setInt(2, tid);
+            res = pstmt.executeUpdate();
+        } catch (NumberFormatException e) {
+            System.err.println("format error");
+        } catch(SQLException e) {
+            System.err.println("SQL error");
+        } catch(Exception e) {
+            System.err.println("any error");
+        }
+
+        if(res > 0) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }

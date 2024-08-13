@@ -7,14 +7,19 @@ import java.sql.SQLException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.preflame.oneorder.TempJson;
 import com.preflame.oneorder.model.REModel;
 import com.preflame.oneorder.sql.DbManager;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/api/kitchen")
@@ -51,6 +56,31 @@ public class KitchenAPI {
         json.put("table_id", ar);
 
         return new REModel().getObjectToModel(json);
-        // return new TempJson().getJson();
+    }
+
+    @PutMapping("/cooked/{id}")
+    public ResponseEntity<Object> cookedMerch(@PathVariable("id") String id) {
+        DbManager man = DbManager.getInstance();
+        int result = -1;
+        try (Connection cn = man.getConnection()) {
+            int cid = Integer.parseInt(id);
+            String sql = "UPDATE aboutSlip SET cooked_flag = true WHERE id = ?";
+            PreparedStatement pstmt = cn.prepareStatement(sql);
+            pstmt.setInt(1, cid);
+
+            result = pstmt.executeUpdate();
+        } catch(NumberFormatException e) {
+            System.err.println("format error");
+        } catch (SQLException e) {
+            System.err.println("SQL Error");
+        } catch (Exception e) {
+            System.err.println("any error");
+        }
+        
+        if(result > 0) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }
