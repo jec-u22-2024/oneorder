@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunktableorder4"]=self["webpackChunktableorder4"]||[]).push([[499],{2499:function(t,n,e){e.r(n),e.d(n,{default:function(){return l}});var r=e(6768);function u(t,n,e,u,o,a){const c=(0,r.g2)("Button"),i=(0,r.g2)("RouterLink");return(0,r.uX)(),(0,r.CE)("main",null,[(0,r.bF)(i,{to:"/kitchen/order"},{default:(0,r.k6)((()=>[(0,r.bF)(c,{label:"注文確認",icon:"ti ti-list-numbers"})])),_:1})])}var o=e(5236),a={components:{Button:o.A}},c=e(1241);const i=(0,c.A)(a,[["render",u]]);var l=i}}]);
-//# sourceMappingURL=499.js.map

@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunktableorder4"]=self["webpackChunktableorder4"]||[]).push([[34],{6034:function(e,t,r){r.r(t),r.d(t,{default:function(){return l}});var n=r(6768);const o=(0,n.Lk)("h1",null,"error",-1),u=[o],s={name:"ErrorWindow"};var a=Object.assign(s,{setup(e){return document.querySelector("meta[name='robots']").setAttribute("content","noindex"),(e,t)=>((0,n.uX)(),(0,n.CE)("section",null,u))}});const c=a;var l=c}}]);
-//# sourceMappingURL=34.js.map
