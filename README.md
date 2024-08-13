@@ -15,7 +15,7 @@ VSCode で oneorder_backをクローンしてプルとかして持ってくる
 <img width="38" alt="スクリーンショット 2024-08-13 10 35 52" src="https://github.com/user-attachments/assets/02258024-4ea2-42a0-aab2-459c981b59c8">
 
 そこ開くとこんな感じになってると思うから、一番上のAPPSにカーソル合わせたら起動できそうなマーク出てくるからそこクリックすれば動きます。多分。
-<img width="216" height="300" alt="スクリーンショット 2024-08-13 10 37 15" src="https://github.com/user-attachments/assets/6c89b47c-91b4-4f89-be54-8279258d2e19">
+<img width="216" alt="スクリーンショット 2024-08-13 10 37 15" src="https://github.com/user-attachments/assets/6c89b47c-91b4-4f89-be54-8279258d2e19">
 
 あとはなんか諸々試してほしい
 基本のパス
