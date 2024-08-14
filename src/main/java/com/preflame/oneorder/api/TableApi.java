@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/table")
-public class TableApi {
+public class TableAPI {
 
     @GetMapping(path = "/status/{tableId}")
     public ResponseEntity<Object> getStatus(@PathVariable("tableId") String tableId) {

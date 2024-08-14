@@ -1614,3 +1614,9 @@ header.kitchen {
     margin: 0;
     font-size: 4rem;
 }
+
+.item-image {
+    /* width: 30%; */
+    width: 8rem;
+    height: 8rem;
+}

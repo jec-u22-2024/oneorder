@@ -4,9 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.ArrayList;
-import com.preflame.oneorder.model.CartMerch;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.preflame.oneorder.TempJson;
 import com.preflame.oneorder.model.REModel;
 import com.preflame.oneorder.sql.DbManager;
+import org.springframework.web.bind.annotation.PutMapping;
+
+
 
 @RestController
 @RequestMapping("/api/order")
@@ -170,12 +170,70 @@ public class UserAPI {
 		// return new ResponseEntity<Object>(tmpJson.toMap(), HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
+	@GetMapping("/accounting/table/{table}")
+	public ResponseEntity<Object> getAccountingHistory(@PathVariable("table") String tableId) {
+		JSONArray json = new JSONArray();
+		DbManager man = DbManager.getInstance();
+		try (Connection cn = man.getConnection()) {
+			int tid = Integer.parseInt(tableId);
+			String sql = "SELECT SUM(order_quant) sum, name, merch_id, m.price * SUM(order_quant) total FROM aboutSlip a JOIN merchandice m ON a.merch_id = m.id WHERE table_id = ? AND slip_id IS NULL GROUP BY merch_id, m.name";
+			PreparedStatement pstmt = cn.prepareStatement(sql);
+			pstmt.setInt(1, tid);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				int amount = rs.getInt("sum");
+				String name = rs.getString("name");
+				int mid = rs.getInt("merch_id");
+				int total = rs.getInt("total");
+
+				JSONObject obj = new JSONObject();
+				obj.put("merch_id", mid);
+				obj.put("name", name);
+				obj.put("amount", amount);
+				obj.put("price", total);
+				json.put(obj);
+			}
+		} catch (NumberFormatException e) {
+			System.err.println("format error");
+		} catch (SQLException e) {
+			System.err.println("SQL error");
+		}
+
+		return new REModel().getArrayToModel(json);
+		// return new TempJson().getJson();
+	}
+
+	@PutMapping("/accounting/{id}")
+	public ResponseEntity<Object> accounting(@PathVariable("id") String id) {
+
+		DbManager man = DbManager.getInstance();
+		try (Connection cn = man.getConnection()) {
+			int tid = Integer.parseInt(id);
+			String sql = "UPDATE tables SET status = 'お会計待ち' WHERE id = ?";
+			PreparedStatement pstmt = cn.prepareStatement(sql);
+			pstmt.setInt(1, tid);
+			int res = pstmt.executeUpdate();
+
+			if(res < 0) {
+				System.err.println("error?");
+			}
+		} catch(NumberFormatException e) {
+			System.err.println("format error");
+		} catch (SQLException e) {
+			System.err.println("SQL error");
+		}
+		
+		return new REModel().getModel();
+		// return new TempJson().getJson();
+	}
+	
+
 
 	/**
 	 * 注文された商品をデータベースに登録する処理
 	 * 
 	 * @param data jsonデータ
-	 * @return jsonでレスポンスを返す
+	 * @return ただのHTTPステータス
 	 */
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> postOrderItem(@RequestBody String data) {

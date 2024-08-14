@@ -19,6 +19,10 @@ public class REModel {
         return new ResponseEntity<Object>(stat);
     }
 
+    public ResponseEntity<Object> getModel(HttpStatus s) {
+        return new ResponseEntity<Object>(s);
+    }
+
     public void setStatus(HttpStatus stat) {
         this.stat = stat;
     }
