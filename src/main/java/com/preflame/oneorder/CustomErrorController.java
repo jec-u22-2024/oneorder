@@ -26,6 +26,7 @@ public class CustomErrorController implements ErrorController {
 		"(?i)^\\/kitchen\\/?$",
 		"(?i)^\\/kitchen/home\\/?$",
 		"(?i)^\\/kitchen/order\\/?$",
+		"(?i)^\\/kitchen/recommend\\/?$",
 	};
 
 	@GetMapping(value = "/error")

@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.preflame.oneorder.TempJson;
 import com.preflame.oneorder.model.REModel;
 import com.preflame.oneorder.sql.DbManager;
+import com.preflame.oneorder.sql.Recommend;
+
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -38,6 +40,10 @@ public class UserAPI {
 //		List<OrderItem> OrderList = new ArrayList<>();
 		JSONArray json = new JSONArray();
 		DbManager manager = DbManager.getInstance();
+		JSONObject recommend = Recommend.getRecommend();
+		if(recommend != null) {
+			json.put(recommend);
+		}
 		try(Connection conn = manager.getConnection()) {
 			PreparedStatement pstmt1 = conn.prepareStatement("SELECT * FROM category WHERE isVisible = true");
 			ResultSet rs1 = pstmt1.executeQuery();
