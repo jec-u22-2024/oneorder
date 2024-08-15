@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 public class DbManager {
     // private static String url = "jdbc:mysql://IPアドレス(できれば普遍的なやつ)/U22Test";
-    // private static String url = "jdbc:mysql://localhost/U22Test";
     private static String url = "jdbc:mysql://localhost/OneOrder";
     private static String username = "U22User";
     private static String password = "pass";

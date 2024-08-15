@@ -9,6 +9,8 @@ import com.preflame.oneorder.sql.DbManager;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -181,10 +183,21 @@ public class MerchandiceAPI {
         System.out.println(id);
         DbManager man = DbManager.getInstance();
 
-        // TODO: 気が向いたら画像も削除する
         try (Connection cn = man.getConnection()) {
             int res = -1;
             int mid = Integer.parseInt(id);
+            String del = "SELECT image FROM merchandice WHERE id = ?";
+            PreparedStatement delpstmt = cn.prepareStatement(del);
+            ResultSet rs = delpstmt.executeQuery();
+            if(rs.next()) {
+                String img = rs.getString("image");
+                Path dst = Path.of("./src/main/resources/static", img);
+                File image = new File(dst.toString());
+                if(image.exists()) {
+                    image.delete();
+                }
+            }
+
             String sql = "DELETE FROM merchandice WHERE id = ?";
             PreparedStatement pstmt = cn.prepareStatement(sql);
             pstmt.setInt(1, mid);
