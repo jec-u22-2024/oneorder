@@ -1652,14 +1652,16 @@ button.RecommendBtn {
 }
 
 .sidebar-btn {
-    padding: 5px;
-    padding-left: 10px;
+    /* padding: 5px; */
+    /* padding-left: 10px; */
+    padding: 15px 10px;
     margin: 3% 7%;
     text-decoration: none;
     color: #ffe086;
     width: 100%;
-    border-left: solid 4px #ffe086;
+    border-left: solid 5px #ffe086;
     text-align: left;
+    font-weight: bold;
 }
 
 .sidebar-btn:hover {
