@@ -1638,3 +1638,35 @@ button.RecommendBtn {
 .RecommendBtn.cancel {
     background: #ccf;
 }
+
+
+/*
+========== Sidebar ==========
+*/
+
+.sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
+    background: #002984;
+    height: 100vh;
+}
+
+.sidebar-btn {
+    padding: 5px;
+    padding-left: 10px;
+    margin: 3% 7%;
+    text-decoration: none;
+    color: #ffe086;
+    width: 100%;
+    border-left: solid 4px #ffe086;
+    text-align: left;
+}
+
+.sidebar-btn:hover {
+    background: #0d44bb;
+}
+
+.sidebar-item {
+    display: flex;
+    /* flex-direction: column; */
+}
