@@ -46,11 +46,14 @@ public class TableAPI {
             }
         } catch(NumberFormatException e) {
             System.err.println("format error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         } catch(SQLException e) {
             System.err.println("SQLError");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
             System.err.println("any error");
+            return new REModel().getModel(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new REModel().getObjectToModel(json);
@@ -58,7 +61,6 @@ public class TableAPI {
 
     @PutMapping("/status/{id}")
     public ResponseEntity<Object> changeStatus(@PathVariable("id") String id, @RequestBody String status) {
-        // System.out.println(id);
         JSONObject json = new JSONObject(status);
         String stat = json.getString("status");
         int res = -1;
@@ -70,18 +72,23 @@ public class TableAPI {
             pstmt.setString(1, stat);;
             pstmt.setInt(2, tid);
             res = pstmt.executeUpdate();
+            if (res < 0) {
+                System.err.println("error");
+                return new REModel().getModel(HttpStatus.BAD_REQUEST);
+            }
         } catch (NumberFormatException e) {
             System.err.println("format error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         } catch(SQLException e) {
             System.err.println("SQL error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         } catch(Exception e) {
+            e.printStackTrace();
+            System.out.println();
             System.err.println("any error");
+            return new REModel().getModel(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if(res > 0) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

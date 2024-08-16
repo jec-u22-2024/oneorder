@@ -75,6 +75,7 @@ public class RegiAPI {
 
         } catch(SQLException e) {
             System.err.println("error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
         
         REModel mod = new REModel();
@@ -90,7 +91,6 @@ public class RegiAPI {
             int total = 0;
             // String sql = "SELECT a.id, order_quant, merch_id, name, price, table_id, table_name FROM aboutSlip a JOIN merchandice m ON a.merch_id = m.id JOIN tables t ON a.table_id = t.id WHERE slip_id IS NULL AND accounted = false HAVING table_name = ?"; // table_name用
             String sql = "SELECT a.id, order_quant, merch_id, name, price, table_id, table_name FROM aboutSlip a JOIN merchandice m ON a.merch_id = m.id JOIN tables t ON a.table_id = t.id WHERE slip_id IS NULL AND accounted = false HAVING table_id = ?"; // table_id用
-            // String sql = "SELECT a.id, order_quant, merch_id, name, price, table_id, table_name FROM aboutSlip a JOIN merchandice m ON a.merch_id = m.id JOIN tables t ON a.table_id = t.id WHERE slip_id IS NULL AND accounted = false GROUP BY merch_id HAVING table_id = ?"; // table_id用
             PreparedStatement pstmt = cn.prepareStatement(sql);
             pstmt.setString(1, table);
             ResultSet rs = pstmt.executeQuery();
@@ -113,17 +113,17 @@ public class RegiAPI {
                 json.put("table", tName);
                 ar.put(obj);
             }
-            // json.put("table", table);
             json.put("items", ar);
             json.put("total", total);
             // String sql = "SELECT a.id, order_quant, merch_id, name, price, table_id, table_name FROM aboutSlip a JOIN merchandice m ON a.merch_id = m.id JOIN tables t ON a.table_id = t.id HAVING table_id = ?"; // table_id用
         } catch (SQLException e) {
-            // e.printStackTrace();
+            e.printStackTrace();
+            System.out.println();
             System.err.println("error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
 
         return new REModel().getObjectToModel(json);
-        // return new TempJson().getJson();
     }
 
     @GetMapping("/historys/{date}")
@@ -131,7 +131,7 @@ public class RegiAPI {
         JSONArray arr = new JSONArray();
         DbManager man = DbManager.getInstance();
         try (Connection cn = man.getConnection()) {
-            String sql = "SELECT DISTINCT s.*, table_name FROM aboutSlip ab JOIN slip s ON ab.slip_id = s.id JOIN tables t ON ab.table_id = t.id WHERE DATE_FORMAT(leave_date, '%Y-%m-%d') = ?";
+            String sql = "SELECT DISTINCT s.*, table_name FROM aboutSlip ab JOIN slip s ON ab.slip_id = s.id LEFT OUTER JOIN tables t ON ab.table_id = t.id WHERE DATE_FORMAT(leave_date, '%Y-%m-%d') = ?";
             PreparedStatement pstmt = cn.prepareStatement(sql);
             pstmt.setString(1, date);
             ResultSet rs = pstmt.executeQuery();
@@ -152,10 +152,12 @@ public class RegiAPI {
                 arr.put(obj);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println();
             System.err.println("error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
         return new REModel().getArrayToModel(arr);
-        // return new TempJson().getJson();
     }
 
     @GetMapping("/history/details/{slipId}")
@@ -165,8 +167,6 @@ public class RegiAPI {
         try (Connection cn = man.getConnection()) {
             int argSlipId = Integer.parseInt(slipId);
 
-
-            // String sql = "SELECT order_quant, merch_id, name, price FROM aboutSlip ab JOIN merchandice m ON ab.merch_id = m.id WHERE slip_id = ?";
             String sql = "SELECT SUM(order_quant) sum, name, merch_id, price, m.price * SUM(order_quant) total FROM aboutSlip a LEFT OUTER JOIN merchandice m ON a.merch_id = m.id WHERE slip_id = ? GROUP BY merch_id, m.name";
             PreparedStatement pstmt = cn.prepareStatement(sql);
             pstmt.setInt(1, argSlipId);
@@ -181,8 +181,6 @@ public class RegiAPI {
                 String name = rs.getString("name");
                 String total = rs.getString("total");
                 int price = rs.getInt("price");
-                
-                // int total = price * amount;
 
                 obj.put("id", id);
                 obj.put("name", name);
@@ -193,25 +191,26 @@ public class RegiAPI {
             }
         } catch(NumberFormatException e) {
             System.err.println("format error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         } catch(SQLException e) {
+            e.printStackTrace();
+            System.out.println();
             System.err.println("SQL Error");
-            REModel bad = new REModel();
-            bad.setStatus(HttpStatus.BAD_REQUEST);
-            return bad.getModel();
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // any
+            e.printStackTrace();
+            return new REModel().getModel(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new REModel().getArrayToModel(json);
-        // return new TempJson().getJson();
     }
 
     @PostMapping("/regi/accounting")
     public ResponseEntity<Object> postAccounting(@RequestBody String Jsons) {
         JSONObject json = new JSONObject(Jsons);
-        int total = json.getInt("total"); // totalprice
-        int bills = json.getInt("bill"); // amount_paid
-        int changeMoney = bills - total; // change_money
+        int total = json.getInt("total");
+        int bills = json.getInt("bill");
+        int changeMoney = bills - total;
         int tid = json.getInt("id");
         int res1 = -1;
         int res2 = -1;
@@ -249,10 +248,10 @@ public class RegiAPI {
                 System.err.println("argument error");
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println();
             System.err.println("SQL Error");
-            REModel bad = new REModel();
-            bad.setStatus(HttpStatus.BAD_REQUEST);
-            return bad.getModel();
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
         
         return new REModel().getModel();
@@ -285,7 +284,6 @@ public class RegiAPI {
             stat = HttpStatus.BAD_REQUEST;
             json.put("error", "Any Error");
         }
-        // System.out.println(json.toString());
         ResponseEntity<Object> res = new ResponseEntity<Object>(json.toMap(), stat);
         return res;
     }
@@ -313,10 +311,11 @@ public class RegiAPI {
                 Files.copy(file.getInputStream(), dst);
             } catch(IOException ex) {
                 System.err.println("I/O例外");
+                return new REModel().getModel(HttpStatus.BAD_REQUEST);
             }
         } catch(Exception e) {
             System.err.println("any error");
-            return new REModel().getModel(HttpStatus.BAD_REQUEST);
+            return new REModel().getModel(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new REModel().getModel();

@@ -56,6 +56,7 @@ public class MasterTablesAPI {
             }
         } catch(SQLException e) {
             System.err.println("error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
 
         REModel mod = new REModel();
@@ -87,17 +88,15 @@ public class MasterTablesAPI {
             res = pstmt.executeUpdate();
             if(res < 0) {
                 System.err.println("error");
+                return new REModel().getModel(HttpStatus.BAD_REQUEST);
             }
         } catch (SQLException e) {
             System.err.println("SQL error");
-            REModel bad = new REModel();
-            bad.setStatus(HttpStatus.BAD_REQUEST);
-            return bad.getModel();
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
 
 
         return new REModel().getModel();
-        // return new TempJson().getJson();
     }
 
     @PutMapping("/{id}")
@@ -157,9 +156,11 @@ public class MasterTablesAPI {
             res = pstmt.executeUpdate();
             if(res < 0) {
                 System.err.println("error");
+                return new REModel().getModel(HttpStatus.BAD_REQUEST);
             }
         } catch (SQLException e) {
             System.err.println("SQL error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
 
         return new REModel().getModel();

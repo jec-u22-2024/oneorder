@@ -88,6 +88,7 @@ public class KitchenAPI {
             }
         } catch (SQLException e) {
             System.err.println("SQL error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
 
         return new REModel().getArrayToModel(json);
@@ -133,18 +134,21 @@ public class KitchenAPI {
             pstmt.setInt(1, cid);
 
             result = pstmt.executeUpdate();
+
+            if(result < 0) {
+                return new REModel().getModel(HttpStatus.BAD_REQUEST);
+            }
         } catch(NumberFormatException e) {
             System.err.println("format error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         } catch (SQLException e) {
             System.err.println("SQL Error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             System.err.println("any error");
+            return new REModel().getModel(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         
-        if(result > 0) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

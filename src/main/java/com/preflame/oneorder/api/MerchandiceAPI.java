@@ -66,7 +66,8 @@ public class MerchandiceAPI {
                 json.put(obj);
             }
         } catch(SQLException e) {
-            System.err.println("error");
+            System.err.println("SQL error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
 
         REModel mod = new REModel();
@@ -76,7 +77,6 @@ public class MerchandiceAPI {
     @PostMapping
     public ResponseEntity<Object> insertMerch(@RequestBody String Jsons) {
         JSONObject json = new JSONObject(Jsons);
-        System.out.println(json);
         String image = json.getString("image");
         int cid = json.getInt("category_id");
         int price = json.getInt("price");
@@ -101,19 +101,15 @@ public class MerchandiceAPI {
             }
         } catch (SQLException e) {
             System.err.println("SQL error");
-            REModel bad = new REModel();
-            bad.setStatus(HttpStatus.BAD_REQUEST);
-            return bad.getModel();
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
         
         return new REModel().getModel();
-        // return new TempJson().getJson();
     }
 
     @PutMapping
     public ResponseEntity<Object> updateMerch(@RequestBody String Jsons) {
         JSONObject json = new JSONObject(Jsons);
-        System.out.println(json);
         int id = json.getInt("id");
         int cid = json.getInt("category");
         String name = json.getString("name");
@@ -142,9 +138,11 @@ public class MerchandiceAPI {
             res = pstmt.executeUpdate();
             if(res < 0) {
                 System.err.println("error");
+                return new REModel().getModel(HttpStatus.BAD_REQUEST);
             }
         } catch (SQLException e) {
             System.err.println("SQL error");
+            return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }
 
         return new REModel().getModel();
@@ -180,7 +178,6 @@ public class MerchandiceAPI {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteMerch(@PathVariable("id") String id) {
-        System.out.println(id);
         DbManager man = DbManager.getInstance();
 
         try (Connection cn = man.getConnection()) {

@@ -37,7 +37,6 @@ public class UserAPI {
 	 */
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getOrderList() {
-//		List<OrderItem> OrderList = new ArrayList<>();
 		JSONArray json = new JSONArray();
 		DbManager manager = DbManager.getInstance();
 		JSONObject recommend = Recommend.getRecommend();
@@ -52,7 +51,6 @@ public class UserAPI {
 				JSONObject cat = new JSONObject();
 				int catid = rs1.getInt("id");
 				String category_name = rs1.getString("category_name");
-//				OrderItem item = new OrderItem(catid, category_name);
 				
 				cat.put("category_id", catid);
 				cat.put("category_name", category_name);
@@ -72,33 +70,19 @@ public class UserAPI {
 					String image = rs2.getString("image");
 					String desc = rs2.getString("description");
 					
-//					Merchandice merch_item = new Merchandice(merch_id, merch_name, price, image);
-//					if(StringUtils.isNotEmpty(desc)) {
-//						merch_item.setDesc(desc);
-//					}
-//					
-//					item.appendItem(merch_item);
-					
 					merch.put("merch_id", merch_id);
 					merch.put("merch_name", merch_name);
 					merch.put("price", price);
 					merch.put("image", image);
 					merch.put("desc", desc);
-//					merchArray.put(merch.toMap());
 					merchArray.put(merch);
 				}
 				
-//				cat.put("items", merchArray.toList());
 				cat.put("items", merchArray);
-//				json.put(cat.toMap());
 				json.put(cat);
 			}
-//			System.out.println(json);
-//			return json;
-//			return json.toString();
-//			return json.getJSONObject(0);
+			
 			return new ResponseEntity<Object>(json.toList(), HttpStatus.OK);
-//			return null;
 			
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -121,14 +105,13 @@ public class UserAPI {
 		TempJson tmpJson = new TempJson();
 		try {
 			json.put(tmpJson);
-			int cid = Integer.parseInt(catId);
-			System.out.println(cid);
+			// int cid = Integer.parseInt(catId);
 		} catch(NumberFormatException e) {
 			tmpJson.put("error", "The value entered is invalid.");
-			System.out.println("error.");
+			System.err.println("error.");
 		}
 		
-		return new ResponseEntity<Object>(tmpJson.toMap(), HttpStatus.SERVICE_UNAVAILABLE);
+		return new ResponseEntity<Object>(tmpJson.toMap(), HttpStatus.NOT_IMPLEMENTED);
 	}
 	
 	/**
@@ -144,7 +127,6 @@ public class UserAPI {
 		DbManager man = DbManager.getInstance();
 		try (Connection cn = man.getConnection()) {
 			int tableId = Integer.parseInt(tableid);
-			// System.out.println(tableId);
 
 			String sql = "SELECT * FROM aboutSlip a JOIN merchandice m ON a.merch_id = m.id WHERE table_id = ? AND slip_id IS NULL";
 			PreparedStatement pstmt = cn.prepareStatement(sql);
@@ -166,14 +148,11 @@ public class UserAPI {
 			}
 		} catch(NumberFormatException e) {
 			tmpJson.put("error", "The value entered is invalid.");
-//			e.printStackTrace();
 		} catch(SQLException e) {
-			// e.printStackTrace();
 			System.err.println("error");
 		}
 		
 		return new REModel().getArrayToModel(json);
-		// return new ResponseEntity<Object>(tmpJson.toMap(), HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	@GetMapping("/accounting/table/{table}")
@@ -201,8 +180,10 @@ public class UserAPI {
 			}
 		} catch (NumberFormatException e) {
 			System.err.println("format error");
+			return new REModel().getModel(HttpStatus.BAD_REQUEST);
 		} catch (SQLException e) {
 			System.err.println("SQL error");
+			return new REModel().getModel(HttpStatus.BAD_REQUEST);
 		}
 
 		return new REModel().getArrayToModel(json);
@@ -225,8 +206,10 @@ public class UserAPI {
 			}
 		} catch(NumberFormatException e) {
 			System.err.println("format error");
+			return new REModel().getModel(HttpStatus.BAD_REQUEST);
 		} catch (SQLException e) {
 			System.err.println("SQL error");
+			return new REModel().getModel(HttpStatus.BAD_REQUEST);
 		}
 		
 		return new REModel().getModel();
@@ -267,11 +250,11 @@ public class UserAPI {
 			}
 		} catch (SQLException e) {
 			System.err.println("error");
+			return new REModel().getModel(HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return new ResponseEntity<>(HttpStatus.OK);
-		// return new TempJson().getJson();
 	}
 }
