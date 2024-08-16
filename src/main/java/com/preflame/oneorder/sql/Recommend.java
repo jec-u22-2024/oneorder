@@ -15,7 +15,7 @@ public class Recommend {
         json.put("category_id", 0);
         DbManager man = DbManager.getInstance();
         try (Connection cn = man.getConnection()) {
-            String sql = "SELECT * FROM merchandice WHERE isRecommend = true";
+            String sql = "SELECT * FROM merchandice WHERE isRecommend = true AND isVisible = true";
             PreparedStatement pstmt = cn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
 
@@ -29,7 +29,7 @@ public class Recommend {
 
                 JSONObject obj = new JSONObject();
 
-                obj.put("id", id);
+                obj.put("merch_id", id);
                 obj.put("merch_name", merch_name);
                 obj.put("price", price);
                 obj.put("image", image);
