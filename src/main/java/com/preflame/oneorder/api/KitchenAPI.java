@@ -15,9 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.preflame.oneorder.model.REModel;
 import com.preflame.oneorder.sql.DbManager;
+import com.preflame.oneorder.sql.TopFive;
+
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -151,4 +155,22 @@ public class KitchenAPI {
         
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
+    /**
+     * 注文商品上位5つを取得する処理
+     * 
+     * ただし未使用
+     * @return
+     */
+    @GetMapping("/topfive")
+    public ResponseEntity<Object> getTopFive() {
+        JSONObject json = TopFive.getTops();
+        if(json == null) {
+            return new REModel().getModel(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new REModel().getObjectToModel(json);
+    }
+    
 }
