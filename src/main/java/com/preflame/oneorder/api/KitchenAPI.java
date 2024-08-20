@@ -163,7 +163,8 @@ public class KitchenAPI {
     public ResponseEntity<Object> getTopFive() {
         JSONObject json = TopFive.getTops();
         if(json == null) {
-            return new REModel().getModel(HttpStatus.INTERNAL_SERVER_ERROR);
+            json = new JSONObject();
+            json.put("status", "問題が発生したか、まだ注文数が十分ではありません");
         }
 
         return new REModel().getObjectToModel(json);

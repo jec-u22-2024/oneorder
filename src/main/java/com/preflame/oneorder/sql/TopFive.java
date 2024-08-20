@@ -61,11 +61,11 @@ public class TopFive {
             System.err.println("SQL error");
             return null;
         }
-        
-        if(json.getJSONArray("topfive").length() > 0) {
-            return json;
-        } else {
+
+        if(json.getInt("pct") == 100) {
             return null;
+        } else {
+            return json;
         }
     }
 }
