@@ -185,6 +185,7 @@ public class MerchandiceAPI {
             int mid = Integer.parseInt(id);
             String del = "SELECT image FROM merchandice WHERE id = ?";
             PreparedStatement delpstmt = cn.prepareStatement(del);
+            delpstmt.setInt(1, mid);
             ResultSet rs = delpstmt.executeQuery();
             if(rs.next()) {
                 String img = rs.getString("image");
