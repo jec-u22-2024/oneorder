@@ -14,5 +14,8 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  servlet:
+    multipart:
+      location: ./
 # spring.mvc.hiddenmethod.filter.enabled=true
 # spring.webflux.hiddenmethod.filter.enabled=true
