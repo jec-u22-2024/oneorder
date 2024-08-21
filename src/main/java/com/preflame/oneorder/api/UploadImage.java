@@ -34,8 +34,8 @@ public class UploadImage {
         HttpStatus stat = null;
 
         // Path dst = Path.of("./src/main/resources/static/upload/img", file.getOriginalFilename());
-        Path dst = Path.of("./resource/upload/img", file.getOriginalFilename());
-        // Path dst = Path.of("./upload/img", file.getOriginalFilename());
+        // Path dst = Path.of("./resource/upload/img", file.getOriginalFilename());
+        Path dst = Path.of("./upload/img", file.getOriginalFilename());
         try {
             // byte[] fileByte = file.getBytes();
             // Files.write(dst, fileByte);
