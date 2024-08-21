@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.preflame.oneorder.TempJson;
 import com.preflame.oneorder.model.REModel;
 import com.preflame.oneorder.sql.DbManager;
 
@@ -37,13 +36,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/api/master")
 public class RegiAPI {
     
-    @GetMapping
-    public ResponseEntity<Object> getAny() {
-        TempJson tmpJson = new TempJson();
-
-        return tmpJson.getJson();
-    }
-
     @GetMapping("/regi/tables")
     public ResponseEntity<Object> getRegiTables() {
         JSONArray json = new JSONArray();
@@ -259,9 +251,14 @@ public class RegiAPI {
     
     /**
      * 画像アップロードの処理
+     * 
+     * VSCodeでExtension Packを入れた状態で動かしたら動きはした
+     * ただしjarにするとうまく動かないので非推奨
+     * 
      * @param file
      * @return
      */
+    @Deprecated
     @PostMapping("/merchImage")
     public ResponseEntity<Object> uploadMerch(@RequestPart("images") MultipartFile file) {
         JSONObject json = new JSONObject();
@@ -281,13 +278,22 @@ public class RegiAPI {
             }
             stat = HttpStatus.ACCEPTED;
         } catch(Exception e) {
-            stat = HttpStatus.BAD_REQUEST;
+            e.printStackTrace();
+            stat = HttpStatus.INTERNAL_SERVER_ERROR;
             json.put("error", "Any Error");
         }
         ResponseEntity<Object> res = new ResponseEntity<Object>(json.toMap(), stat);
         return res;
     }
 
+    /**
+     * 画像を更新する処理
+     * uploadMerchと同じくjarにするとうまく動かないので非推奨
+     * @param file 画像ファイル
+     * @param oldPath 削除するためのパス
+     * @return レスポンス
+     */
+    @Deprecated
     @PutMapping("/merchImage")
     public ResponseEntity<Object> updateImage(@RequestPart("images") MultipartFile file, @RequestPart("oldImage") String oldPath) {
         Path dst = Path.of("./src/main/resources/static/upload/img", file.getOriginalFilename());
@@ -314,7 +320,7 @@ public class RegiAPI {
                 return new REModel().getModel(HttpStatus.BAD_REQUEST);
             }
         } catch(Exception e) {
-            System.err.println("any error");
+            e.printStackTrace();
             return new REModel().getModel(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -339,8 +345,7 @@ public class RegiAPI {
         } catch(NumberFormatException e) {
             System.err.println("format error");
             return new REModel().getModel(HttpStatus.BAD_REQUEST);
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.err.println("SQL error");
             return new REModel().getModel(HttpStatus.BAD_REQUEST);
         }

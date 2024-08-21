@@ -5,8 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /**
- * 仮置き用
- * APIが実装されていないときに返すだけのクラス
+ * 実装されていないときに返すだけのクラス
  */
 public class TempJson extends JSONObject {
     private HttpStatus stat = HttpStatus.NOT_IMPLEMENTED;
