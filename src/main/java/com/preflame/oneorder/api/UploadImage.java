@@ -6,13 +6,16 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.preflame.oneorder.model.REModel;
@@ -22,6 +25,8 @@ import com.preflame.oneorder.model.REModel;
  * 
  * 検証をしまくるために分離
  */
+@RestController
+@RequestMapping("/api/master")
 public class UploadImage {
     /**
      * 画像アップロードの処理
@@ -31,11 +36,11 @@ public class UploadImage {
     @PostMapping("/merchImage")
     public ResponseEntity<Object> uploadMerch(@RequestPart("images") MultipartFile file) {
         JSONObject json = new JSONObject();
-        HttpStatus stat = null;
+        HttpStatus stat = HttpStatus.INTERNAL_SERVER_ERROR;
 
         // Path dst = Path.of("./src/main/resources/static/upload/img", file.getOriginalFilename());
         // Path dst = Path.of("./resource/upload/img", file.getOriginalFilename());
-        Path dst = Path.of("./upload/img", file.getOriginalFilename());
+        Path dst = Path.of("./external_resources/upload/img", file.getOriginalFilename());
         try {
             // byte[] fileByte = file.getBytes();
             // Files.write(dst, fileByte);
