@@ -252,20 +252,16 @@ public class RegiAPI {
     /**
      * 画像アップロードの処理
      * 
-     * VSCodeでExtension Packを入れた状態で動かしたら動きはした
-     * ただしjarにするとうまく動かないので非推奨
-     * 
      * @param file
      * @return
      */
-    @Deprecated
     @PostMapping("/merchImage")
     public ResponseEntity<Object> uploadMerch(@RequestPart("images") MultipartFile file) {
         JSONObject json = new JSONObject();
         HttpStatus stat = null;
 
         // String path = "./src/main/resources/static/upload/img" + file.getOriginalFilename();
-        Path dst = Path.of("./src/main/resources/static/upload/img", file.getOriginalFilename());
+        Path dst = Path.of("./ext_resources/upload/img", file.getOriginalFilename());
         try {
             Files.copy(file.getInputStream(), dst);
             stat = HttpStatus.CREATED;
@@ -288,20 +284,20 @@ public class RegiAPI {
 
     /**
      * 画像を更新する処理
-     * uploadMerchと同じくjarにするとうまく動かないので非推奨
      * @param file 画像ファイル
      * @param oldPath 削除するためのパス
      * @return レスポンス
      */
-    @Deprecated
     @PutMapping("/merchImage")
     public ResponseEntity<Object> updateImage(@RequestPart("images") MultipartFile file, @RequestPart("oldImage") String oldPath) {
-        Path dst = Path.of("./src/main/resources/static/upload/img", file.getOriginalFilename());
+        // Path dst = Path.of("./src/main/resources/static/upload/img", file.getOriginalFilename());
+        Path dst = Path.of("./ext_resources/upload/img", file.getOriginalFilename());
         try {
 
             // 一応古い画像を削除する処理
             if(!oldPath.equals("assets/img/noimage.png")) {
-                Path old = Path.of("./src/main/resources/static", oldPath);
+                // Path old = Path.of("./src/main/resources/static", oldPath);
+                Path old = Path.of("./ext_resources", oldPath);
                 File oldImg = new File(old.toString());
                 if(oldImg.delete()) {
                     System.out.println("success");

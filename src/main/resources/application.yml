@@ -6,6 +6,13 @@ spring:
           content:
             enabled: true
             paths: /**
+      static-locations: [
+        classpath:/META-INF/resources/,
+        classpath:/resources/,
+        classpath:/static/,
+        classpath:/public/,
+        file:./ext_resources/
+      ]
   mvc:
     hiddenmethod:
       filter:
