@@ -49,7 +49,7 @@ public class CustomErrorController implements ErrorController {
 						}
 					}
 				}
-				return "/index.html";
+				return "index.html";
 			}
 		}
 
